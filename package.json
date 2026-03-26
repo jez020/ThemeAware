@@ -17,8 +17,8 @@
     "url": "https://github.com/jez020/ThemeAware/issues"
   },
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jez020/ThemeAware.git"
+    "type": "github",
+    "url": "https://github.com/jez020/ThemeAware"
   },
   "license": "MIT",
   "author": {
