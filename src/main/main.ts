@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isMacOS = process.platform === 'darwin';
 
 if (isDebug) {
   require('electron-debug').default();
@@ -117,16 +118,18 @@ const createWindow = async () => {
  */
 
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  // macOS convention: keep the app running after the last window is closed.
 });
 
 app
   .whenReady()
   .then(() => {
+    if (!isMacOS) {
+      log.warn('ThemeAware is a macOS-only application. Quitting on unsupported platform.');
+      app.quit();
+      return;
+    }
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
