@@ -5,10 +5,25 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
+import { AppUpdater } from './main';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
   submenu?: DarwinMenuItemConstructorOptions[] | Menu;
+}
+
+/**
+ * The function `checkForUpdates` is used to implement update checking logic in a TypeScript
+ * application.
+ */
+function checkForUpdates() {
+  // Implement your update checking logic here
+  // For example, you can use electron-updater or any other update mechanism
+  console.log('Checking for updates...');
+
+
+  // eslint-disable-next-line
+  new AppUpdater();
 }
 
 export default class MenuBuilder {
@@ -60,6 +75,10 @@ export default class MenuBuilder {
         {
           label: `About ${appName}`,
           selector: 'orderFrontStandardAboutPanel:',
+        },
+        {
+          label: `Check for Updates`,
+          click: checkForUpdates,
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
@@ -198,6 +217,10 @@ export default class MenuBuilder {
       {
         label: '&File',
         submenu: [
+          {
+            label: `Check for Updates`,
+            click: checkForUpdates,
+          },
           {
             label: '&Open',
             accelerator: 'Ctrl+O',
