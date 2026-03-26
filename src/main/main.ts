@@ -119,13 +119,16 @@ const createWindow = async () => {
 
 app.on('window-all-closed', () => {
   // macOS convention: keep the app running after the last window is closed.
+  if (!isMacOS) {
+    app.quit();
+  }
 });
 
 app
   .whenReady()
   .then(() => {
     if (!isMacOS) {
-      log.warn('ThemeAware is a macOS-only application. Quitting on unsupported platform.');
+      log.warn(`${app.getName()} is a macOS-only application. Quitting on unsupported platform.`);
       app.quit();
       return;
     }

@@ -50,18 +50,19 @@ export default class MenuBuilder {
   }
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
+    const appName = app.getName();
     const subMenuAbout: DarwinMenuItemConstructorOptions = {
-      label: 'ThemeAware',
+      label: appName,
       submenu: [
         {
-          label: 'About ThemeAware',
+          label: `About ${appName}`,
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide ThemeAware',
+          label: `Hide ${appName}`,
           accelerator: 'Command+H',
           selector: 'hide:',
         },
