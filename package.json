@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "theme-aware",
+  "description": "An Electron boilerplate with React, TypeScript, Sass, Webpack, and hot reload support.",
   "keywords": [
     "electron",
     "boilerplate",
