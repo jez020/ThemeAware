@@ -221,9 +221,6 @@
       "repo": "ThemeAware"
     }
   },
-  "collective": {
-    "url": "https://opencollective.com/ThemeAware-594"
-  },
   "devEngines": {
     "runtime": {
       "name": "node",
