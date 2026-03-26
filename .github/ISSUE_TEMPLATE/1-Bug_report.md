@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: You're having technical issues. 🐞
+about: Bugs to be fixed
 labels: 'bug'
 ---
 
@@ -55,13 +55,3 @@ labels: 'bug'
 - electron-react-boilerplate version or branch :
 - Operating System and version :
 - Link to your project :
-
-<!---
-❗️❗️ Also, please consider donating (https://opencollective.com/electron-react-boilerplate-594) ❗️❗️
-
-Donations will ensure the following:
-
-🔨 Long term maintenance of the project
-🛣 Progress on the roadmap
-🐛 Quick responses to bug reports and help requests
- -->

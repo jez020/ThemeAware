@@ -1,12 +1,8 @@
 ---
-name: Question
-about: Ask a question.❓
-labels: 'question'
+name: New Feature
+about: New feature idea to be added to ThemeAware
+labels: 'enhancement'
 ---
-
-## Summary
-
-<!-- What do you need help with? -->
 
 <!---
 ❗️❗️ Also, please consider donating (https://opencollective.com/electron-react-boilerplate-594) ❗️❗️
