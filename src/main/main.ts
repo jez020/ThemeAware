@@ -15,7 +15,7 @@ import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-class AppUpdater {
+export class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === 'production') {
 
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isMacOS = process.platform === 'darwin';
 
 if (isDebug) {
   require('electron-debug').default();
@@ -73,6 +74,7 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    resizable: false,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -80,7 +82,6 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
-
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
@@ -117,9 +118,8 @@ const createWindow = async () => {
  */
 
 app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
+  // macOS convention: keep the app running after the last window is closed.
+  if (!isMacOS) {
     app.quit();
   }
 });
@@ -127,6 +127,12 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    if (!isMacOS) {
+      log.warn(`${app.getName()} is a macOS-only application. Quitting on unsupported platform.`);
+      app.quit();
+      return;
+    }
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
