@@ -1,7 +1,7 @@
 
 # ThemeAware
 
-An Electron desktop app built with React and TypeScript.
+An Electron desktop app built with React and TypeScript. Test
 
 ## Features
 
