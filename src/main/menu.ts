@@ -5,7 +5,7 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
-import { AppUpdater, createSettingsWindow } from './main';
+import { AppUpdater, createSettingsWindow, enableAutoUpdates } from './main';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -48,7 +48,7 @@ export default class MenuBuilder {
 
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const appName = app.getName();
-    const subMenuAbout: DarwinMenuItemConstructorOptions = {
+    const subMenuAbout: DarwinMenuItemConstructorOptions = enableAutoUpdates ? {
       label: appName,
       submenu: [
         {
@@ -58,6 +58,42 @@ export default class MenuBuilder {
         {
           label: `Check for Updates`,
           click: checkForUpdates,
+        },
+        {
+          label: `Settings`,
+          click: () => {
+            createSettingsWindow();
+          },
+        },
+        { type: 'separator' },
+        { label: 'Services', submenu: [] },
+        { type: 'separator' },
+        {
+          label: `Hide ${appName}`,
+          accelerator: 'Command+H',
+          selector: 'hide:',
+        },
+        {
+          label: 'Hide Others',
+          accelerator: 'Command+Shift+H',
+          selector: 'hideOtherApplications:',
+        },
+        { label: 'Show All', selector: 'unhideAllApplications:' },
+        { type: 'separator' },
+        {
+          label: 'Quit',
+          accelerator: 'Command+Q',
+          click: () => {
+            app.quit();
+          },
+        },
+      ],
+    } : {
+      label: appName,
+      submenu: [
+        {
+          label: `About ${appName}`,
+          selector: 'orderFrontStandardAboutPanel:',
         },
         {
           label: `Settings`,
@@ -196,10 +232,6 @@ export default class MenuBuilder {
         label: '&File',
         submenu: [
           {
-            label: `Check for Updates`,
-            click: checkForUpdates,
-          },
-          {
             label: '&Open',
             accelerator: 'Ctrl+O',
           },
@@ -277,6 +309,14 @@ export default class MenuBuilder {
         ],
       },
     ];
+
+    if (enableAutoUpdates) {
+      templateDefault[0].submenu.push(
+          {
+            label: `Check for Updates`,
+            click: checkForUpdates,
+          },);
+    }
 
     return templateDefault;
   }

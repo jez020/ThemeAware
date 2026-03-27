@@ -35,6 +35,9 @@ ipcMain.on('OpenSettings', async (event, arg) => {
   createSettingsWindow();
 });
 
+
+// Set needed variables for development and production
+
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
@@ -43,6 +46,7 @@ if (process.env.NODE_ENV === 'production') {
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 const isMacOS = process.platform === 'darwin';
+export const enableAutoUpdates = false;
 
 if (isDebug) {
   require('electron-debug').default();
@@ -138,7 +142,9 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  if (enableAutoUpdates) {
+    new AppUpdater();
+  }
 };
 
 /**

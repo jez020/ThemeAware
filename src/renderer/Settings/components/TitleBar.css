@@ -1,0 +1,55 @@
+/* ── Title bar ───────────────────────────────────────── */
+.utility-title-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 32px;
+  -webkit-app-region: drag;
+}
+
+.utility-window-controls {
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 3px;
+  -webkit-app-region: no-drag;
+}
+
+.wc-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 100px;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.wc-close  { background: #ff736a; }
+.wc-minimize { background: #febc2e; }
+.wc-zoom   { background: #19c332; }
+
+.utility-title {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.utility-title-icon {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 13px;
+}
+
+.utility-title-text {
+  color: rgba(0, 0, 0, 0.85);
+}
