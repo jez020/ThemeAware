@@ -113,7 +113,7 @@ if (process.env.NODE_ENV === 'production') {
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 const isMacOS = process.platform === 'darwin';
-export const enableAutoUpdates = false;
+export const enableAutoUpdates = true;
 const startMinimized = settings.getSync('startMinimized') || false;
 
 if (isDebug) {

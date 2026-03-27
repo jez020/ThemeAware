@@ -8,8 +8,7 @@ exports.default = async function notarizeMacos(context) {
     return;
   }
 
-  // TODO: Change this later
-  if (process.env.SKIP_NOTARIZE === 'true') {
+  if (process.env.SKIP_NOTARIZE !== 'true') {
     console.warn('Skipping notarizing step because SKIP_NOTARIZE=true');
     return;
   }
