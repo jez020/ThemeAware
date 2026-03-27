@@ -8,11 +8,6 @@ exports.default = async function notarizeMacos(context) {
     return;
   }
 
-  if (process.env.SKIP_NOTARIZE !== 'true') {
-    console.warn('Skipping notarizing step because SKIP_NOTARIZE=true');
-    return;
-  }
-
   const appName = context.packager.appInfo.productFilename;
   const appPath = path.join(appOutDir, `${appName}.app`);
   const zipPath = path.join(appOutDir, `${appName}.zip`);
