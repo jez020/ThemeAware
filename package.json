@@ -26,7 +26,7 @@
     "email": "jez020@ucsd.edu",
     "url": "https://github.com/jez020"
   },
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./.erb/dll/main.bundle.dev.js",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -174,7 +174,7 @@
     "appId": "com.jez020.themeaware",
     "copyright": "Copyright © 2026 Jerry Zhang. All rights reserved.",
     "afterSign": "./.erb/scripts/notarize.js",
-    "buildVersion": "0.0.1",
+    "buildVersion": "0.0.2",
     "files": [
       "dist",
       "node_modules",
