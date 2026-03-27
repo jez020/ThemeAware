@@ -1,0 +1,65 @@
+/* ── Title bar ───────────────────────────────────────── */
+.utility-title-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 24px;
+  -webkit-app-region: drag;
+}
+
+.utility-window-controls {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px;
+  -webkit-app-region: no-drag;
+}
+
+.wc-dot {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 100px;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.wc-close {
+  background: #ff736a;
+}
+
+.wc-minimize {
+  background: #febc2e;
+}
+
+.wc-zoom {
+  background: #19c332;
+}
+
+.utility-title {
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.utility-title-icon {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.utility-title-text {
+  color: rgba(0, 0, 0, 0.85);
+  line-height: 1;
+}
