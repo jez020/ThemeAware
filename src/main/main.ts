@@ -24,11 +24,15 @@ export class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let settingsWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+ipcMain.on('AppName', async (event, arg) => {
+  const appName = app.getName();
+  event.reply('AppName', appName);
+});
+
+ipcMain.on('OpenSettings', async (event, arg) => {
+  createSettingsWindow();
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -57,6 +61,29 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+export const createSettingsWindow = () => {
+  if (!settingsWindow) {
+    settingsWindow = new BrowserWindow({
+      width: 457,
+      height: 537,
+      resizable: false,
+      titleBarStyle: 'hiddenInset',
+      webPreferences: {
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+      },
+    });
+    settingsWindow.loadURL(resolveHtmlPath('index.html') + '#/settings');
+  } else {
+    settingsWindow.focus();
+  }
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null;
+  });
+};
+
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
@@ -83,7 +110,7 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('index.html') + '#/');
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -142,3 +169,5 @@ app
     });
   })
   .catch(console.log);
+
+

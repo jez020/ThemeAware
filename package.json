@@ -1,5 +1,5 @@
 {
-  "name": "theme-aware",
+  "name": "ThemeAware",
   "description": "An Electron boilerplate with React, TypeScript, Sass, Webpack, and hot reload support.",
   "keywords": [
     "electron",
