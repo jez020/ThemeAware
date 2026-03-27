@@ -26,6 +26,7 @@
     "email": "jez020@ucsd.edu",
     "url": "https://github.com/jez020"
   },
+  "version": "0.1.19",
   "main": "./.erb/dll/main.bundle.dev.js",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -35,7 +36,12 @@
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
+    "increment-build": "ts-node ./.erb/scripts/increment-build.ts",
+    "set-release-version": "ts-node ./.erb/scripts/set-release-version.ts",
+    "package": "npm run package:mas-dev",
+    "package:mas-dev": "npm run increment-build && ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config.mac.target=mas-dev --config.mac.type=development --config.mac.hardenedRuntime=true --config.mac.provisioningProfile=assets/MAS/AppleDevelopment.provisionprofile --config.masDev.identity='Apple Development: Jiuyu Zhang (DXF5WDFVUX)' --config.masDev.entitlements=assets/MAS/entitlements.mas.dev.plist --config.masDev.entitlementsInherit=assets/MAS/entitlements.mas.inherit.plist && npm run build:dll",
+    "package:mas": "npm run increment-build && ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config.mac.target=mas --config.mac.type=distribution --config.mac.provisioningProfile=assets/MAS/MacAppStore.provisionprofile --config.mas.identity='Apple Distribution: Jiuyu Zhang (GF5ZH9C37W)' --config.mas.entitlements=assets/MAS/entitlements.mas.plist --config.mas.entitlementsInherit=assets/MAS/entitlements.mas.inherit.plist && npm run build:dll",
+    "package:mas-release": "npm run set-release-version && ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config.mac.target=mas --config.mac.type=distribution --config.mac.provisioningProfile=assets/MAS/MacAppStore.provisionprofile --config.mas.identity='Apple Distribution: Jiuyu Zhang (GF5ZH9C37W)' --config.mas.entitlements=assets/MAS/entitlements.mas.plist --config.mas.entitlementsInherit=assets/MAS/entitlements.mas.inherit.plist && npm run build:dll",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "prestart": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true NODE_OPTIONS=\"-r ts-node/register --no-warnings\" webpack --config ./.erb/configs/webpack.config.main.dev.ts",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run prestart && npm run start:renderer",
@@ -171,37 +177,24 @@
   "build": {
     "productName": "ThemeAware",
     "appId": "com.jez020.themeaware",
-    "asar": true,
-    "afterSign": ".erb/scripts/notarize.js",
-    "asarUnpack": "**\\*.{node,dll}",
+    "buildVersion": "0.1.19",
+    "copyright": "Copyright © 2026 Jerry Zhang. All rights reserved.",
     "files": [
       "dist",
       "node_modules",
       "package.json"
     ],
-    "mac": {
-      "target": "mas-dev",
-      "minimumSystemVersion": "12.0.0",
-      "type": "development",
-      "hardenedRuntime": true,
-      "category": "public.app-category.utilities",
-      "icon": "assets/icon.icns",
-      "provisioningProfile": "assets/MAS/AppleDevelopment.provisionprofile",
-      "entitlements": "assets/MAS/entitlements.mas.plist",
-      "entitlementsInherit": "assets/MAS/entitlements.mas.inherit.plist"
-    },
     "directories": {
       "app": "release/app",
       "buildResources": "assets",
       "output": "release/build"
     },
-    "extraResources": [
-      "./assets/**"
-    ],
-    "publish": {
-      "provider": "github",
-      "owner": "jez020",
-      "repo": "ThemeAware"
+    "mac": {
+      "notarize": false,
+      "minimumSystemVersion": "12.0",
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon.icns",
+      "hardenedRuntime": true
     }
   },
   "devEngines": {
