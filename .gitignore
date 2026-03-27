@@ -2,6 +2,10 @@
 logs
 *.log
 
+# certs
+*.pem
+*.p12
+
 # Runtime data
 pids
 *.pid
