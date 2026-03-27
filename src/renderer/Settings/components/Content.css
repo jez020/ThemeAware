@@ -1,0 +1,31 @@
+.utility-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 22px 18px 21px;
+  gap: 12px;
+}
+
+
+
+.settings-save-button {
+  margin: auto auto 0;
+  min-height: 37px;
+  border: 0;
+  border-radius: 296px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1a1a1a;
+  background: linear-gradient(180deg, #f7f7f7 0%, #e1e1e1 100%);
+  box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+}
+
+.settings-save-button:hover {
+  background: linear-gradient(180deg, #fafafa 0%, #e7e7e7 100%);
+}
+
+.settings-save-button:active {
+  background: linear-gradient(180deg, #e7e7e7 0%, #d6d6d6 100%);
+}
