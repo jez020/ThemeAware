@@ -76,7 +76,7 @@ export default function Content() {
         checkboxId="startOnLogin"
         currentBoolean={startOnLogin}
         updateBoolean={setStartOnLogin}
-        labelText="Start app on login"
+        labelText="Start on login"
       />
       <button
         type="button"
