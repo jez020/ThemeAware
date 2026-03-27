@@ -5,7 +5,7 @@ import {
   BrowserWindow,
   MenuItemConstructorOptions,
 } from 'electron';
-import { AppUpdater } from './main';
+import { AppUpdater, createSettingsWindow, enableAutoUpdates } from './main';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
   selector?: string;
@@ -34,12 +34,6 @@ export default class MenuBuilder {
   }
 
   buildMenu(): Menu {
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.DEBUG_PROD === 'true'
-    ) {
-      this.setupDevelopmentEnvironment();
-    }
 
     const template =
       process.platform === 'darwin'
@@ -52,24 +46,9 @@ export default class MenuBuilder {
     return menu;
   }
 
-  setupDevelopmentEnvironment(): void {
-    this.mainWindow.webContents.on('context-menu', (_, props) => {
-      const { x, y } = props;
-
-      Menu.buildFromTemplate([
-        {
-          label: 'Inspect element',
-          click: () => {
-            this.mainWindow.webContents.inspectElement(x, y);
-          },
-        },
-      ]).popup({ window: this.mainWindow });
-    });
-  }
-
   buildDarwinTemplate(): MenuItemConstructorOptions[] {
     const appName = app.getName();
-    const subMenuAbout: DarwinMenuItemConstructorOptions = {
+    const subMenuAbout: DarwinMenuItemConstructorOptions = enableAutoUpdates ? {
       label: appName,
       submenu: [
         {
@@ -79,6 +58,48 @@ export default class MenuBuilder {
         {
           label: `Check for Updates`,
           click: checkForUpdates,
+        },
+        {
+          label: `Settings`,
+          click: () => {
+            createSettingsWindow();
+          },
+        },
+        { type: 'separator' },
+        { label: 'Services', submenu: [] },
+        { type: 'separator' },
+        {
+          label: `Hide ${appName}`,
+          accelerator: 'Command+H',
+          selector: 'hide:',
+        },
+        {
+          label: 'Hide Others',
+          accelerator: 'Command+Shift+H',
+          selector: 'hideOtherApplications:',
+        },
+        { label: 'Show All', selector: 'unhideAllApplications:' },
+        { type: 'separator' },
+        {
+          label: 'Quit',
+          accelerator: 'Command+Q',
+          click: () => {
+            app.quit();
+          },
+        },
+      ],
+    } : {
+      label: appName,
+      submenu: [
+        {
+          label: `About ${appName}`,
+          selector: 'orderFrontStandardAboutPanel:',
+        },
+        {
+          label: `Settings`,
+          click: () => {
+            createSettingsWindow();
+          },
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
@@ -128,13 +149,6 @@ export default class MenuBuilder {
           accelerator: 'Command+R',
           click: () => {
             this.mainWindow.webContents.reload();
-          },
-        },
-        {
-          label: 'Toggle Full Screen',
-          accelerator: 'Ctrl+Command+F',
-          click: () => {
-            this.mainWindow.setFullScreen(!this.mainWindow.isFullScreen());
           },
         },
         {
@@ -218,10 +232,6 @@ export default class MenuBuilder {
         label: '&File',
         submenu: [
           {
-            label: `Check for Updates`,
-            click: checkForUpdates,
-          },
-          {
             label: '&Open',
             accelerator: 'Ctrl+O',
           },
@@ -245,15 +255,6 @@ export default class MenuBuilder {
                   accelerator: 'Ctrl+R',
                   click: () => {
                     this.mainWindow.webContents.reload();
-                  },
-                },
-                {
-                  label: 'Toggle &Full Screen',
-                  accelerator: 'F11',
-                  click: () => {
-                    this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen(),
-                    );
                   },
                 },
                 {
@@ -308,6 +309,14 @@ export default class MenuBuilder {
         ],
       },
     ];
+
+    if (enableAutoUpdates) {
+      templateDefault[0].submenu.push(
+          {
+            label: `Check for Updates`,
+            click: checkForUpdates,
+          },);
+    }
 
     return templateDefault;
   }

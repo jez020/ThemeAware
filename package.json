@@ -1,5 +1,5 @@
 {
-  "name": "theme-aware",
+  "name": "ThemeAware",
   "description": "An Electron boilerplate with React, TypeScript, Sass, Webpack, and hot reload support.",
   "keywords": [
     "electron",
@@ -26,6 +26,7 @@
     "email": "jez020@ucsd.edu",
     "url": "https://github.com/jez020"
   },
+  "version": "0.0.1",
   "main": "./.erb/dll/main.bundle.dev.js",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -97,6 +98,7 @@
     "@electron/notarize": "^3.0.0",
     "electron-debug": "^4.1.0",
     "electron-log": "^5.3.2",
+    "electron-settings": "^4.0.4",
     "electron-updater": "^6.3.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -169,22 +171,25 @@
   },
   "build": {
     "productName": "ThemeAware",
-    "appId": "org.erb.ThemeAware",
-    "asar": true,
-    "afterSign": ".erb/scripts/notarize.js",
-    "asarUnpack": "**\\*.{node,dll}",
+    "appId": "com.jez020.themeaware",
+    "copyright": "Copyright © 2026 Jerry Zhang. All rights reserved.",
+    "afterSign": "./.erb/scripts/notarize.js",
     "files": [
       "dist",
       "node_modules",
       "package.json"
     ],
+    "directories": {
+      "app": "release/app",
+      "buildResources": "assets",
+      "output": "release/build"
+    },
     "mac": {
       "notarize": false,
       "target": {
         "target": "default",
         "arch": [
-          "arm64",
-          "x64"
+          "arm64"
         ]
       },
       "type": "distribution",
@@ -192,33 +197,6 @@
       "entitlements": "assets/entitlements.mac.plist",
       "entitlementsInherit": "assets/entitlements.mac.plist",
       "gatekeeperAssess": false
-    },
-    "dmg": {
-      "contents": [
-        {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "directories": {
-      "app": "release/app",
-      "buildResources": "assets",
-      "output": "release/build"
-    },
-    "extraResources": [
-      "./assets/**"
-    ],
-    "publish": {
-      "provider": "github",
-      "owner": "jez020",
-      "repo": "ThemeAware"
     }
   },
   "devEngines": {

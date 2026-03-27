@@ -1,0 +1,19 @@
+.segment-btn {
+  flex: 1;
+  height: 100%;
+  background: none;
+  border: none;
+  border-radius: 100px;
+  padding: 0 5px;
+  font-family: -apple-system, 'SF Pro Text', 'SF Pro Display', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #1a1a1a;
+  text-align: center;
+  cursor: pointer;
+  line-height: 1.4;
+}
+
+.segment-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}

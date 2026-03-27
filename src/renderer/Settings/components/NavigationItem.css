@@ -1,0 +1,22 @@
+.utility-tab {
+  height: 29px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #4d4d4d;
+  text-align: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.utility-tab-active {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.utility-tab:not(.utility-tab-active):hover {
+  background: rgba(0, 0, 0, 0.05);
+}

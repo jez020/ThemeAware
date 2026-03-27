@@ -1,0 +1,22 @@
+.settings-checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  cursor: pointer;
+  user-select: none;
+}
+
+.settings-checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #0d6fff;
+}
+
+.settings-checkbox-label {
+  font-size: 13px;
+  line-height: 16px;
+  color: #1a1a1a;
+  white-space: nowrap;
+}

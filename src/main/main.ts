@@ -14,6 +14,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import settings from 'electron-settings';
+
 
 export class AppUpdater {
   constructor() {
@@ -24,12 +26,84 @@ export class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let settingsWindow: BrowserWindow | null = null;
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
+// Initialize default settings on app startup
+
+// Initialize default settings on app startup
+const initializeDefaultSettings = async () => {
+  const DEFAULT_SETTINGS = {
+    startMinimized: false,
+    startOnLogin: false,
+  };
+
+  // Check if settings exist, if not create defaults
+  for (const [key, value] of Object.entries(DEFAULT_SETTINGS)) {
+    const existing = await settings.get(key);
+    if (existing === undefined) {
+      await settings.set(key, value);
+    }
+  }
+};
+
+// Keep stored setting aligned with the real macOS login item state on startup.
+const syncLoginItemSetting = async () => {
+  const { openAtLogin } = app.getLoginItemSettings();
+  await settings.set('startOnLogin', openAtLogin);
+};
+
+ipcMain.on('AppName', async (event, arg) => {
+  const appName = app.getName();
+  event.reply('AppName', appName);
 });
+
+ipcMain.on('OpenSettings', async (event, arg) => {
+  createSettingsWindow();
+});
+
+
+/**
+ *  ! Current settings
+ * startMinimized: boolean - whether the app should start minimized or not
+ * startOnLogin: boolean - whether the app should start on login or not
+ * */
+
+ipcMain.on('GetSettings', async (event, target) => {
+  const settingsData = await settings.get(target);
+  event.reply('GetSettings', target, settingsData);
+});
+
+ipcMain.on('SetSettings', async (event, target, value) => {
+  if (target === 'startMinimized') {
+    // Validate value type
+    if (typeof value !== 'boolean') {
+      event.reply('SetSettings', target, { success: false, message: 'Invalid value type' });
+      return;
+    }
+    await settings.set(target, value);
+    const settingsData = await settings.get(target);
+    event.reply('SetSettings', target, { success: true, settingsData });
+  } else if (target === 'startOnLogin') {
+    // Validate value type
+    if (typeof value !== 'boolean') {
+      event.reply('SetSettings', target, { success: false, message: 'Invalid value type' });
+      return;
+    }
+
+    // Configure startup settings
+    app.setLoginItemSettings({
+      openAtLogin: value, // true to add, false to remove
+      path: app.getPath('exe'), // Path to your executable
+      args: [] // Optional arguments
+    });
+    await settings.set(target, value);
+    const settingsData = await settings.get(target);
+    event.reply('SetSettings', target, { success: true, settingsData });
+  }
+});
+
+
+// Set needed variables for development and production
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -39,6 +113,8 @@ if (process.env.NODE_ENV === 'production') {
 const isDebug =
   process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 const isMacOS = process.platform === 'darwin';
+export const enableAutoUpdates = true;
+const startMinimized = settings.getSync('startMinimized') || false;
 
 if (isDebug) {
   require('electron-debug').default();
@@ -57,6 +133,30 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+export const createSettingsWindow = async () => {
+  await syncLoginItemSetting();
+  if (!settingsWindow) {
+    settingsWindow = new BrowserWindow({
+      width: 457,
+      height: 537,
+      resizable: false,
+      titleBarStyle: 'hiddenInset',
+      webPreferences: {
+        preload: app.isPackaged
+          ? path.join(__dirname, 'preload.js')
+          : path.join(__dirname, '../../.erb/dll/preload.js'),
+      },
+    });
+    settingsWindow.loadURL(resolveHtmlPath('index.html') + '#/settings');
+  } else {
+    settingsWindow.focus();
+  }
+
+  settingsWindow.on('closed', () => {
+    settingsWindow = null;
+  });
+};
+
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
@@ -72,9 +172,10 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 800,
+    height: 600,
     resizable: false,
+    titleBarStyle: 'hiddenInset',
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -82,13 +183,13 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('index.html') + '#/');
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
-    if (process.env.START_MINIMIZED) {
+    if (startMinimized) {
       mainWindow.minimize();
     } else {
       mainWindow.show();
@@ -110,7 +211,9 @@ const createWindow = async () => {
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  if (enableAutoUpdates) {
+    new AppUpdater();
+  }
 };
 
 /**
@@ -126,13 +229,15 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
     if (!isMacOS) {
       log.warn(`${app.getName()} is a macOS-only application. Quitting on unsupported platform.`);
       app.quit();
       return;
     }
 
+    await initializeDefaultSettings();
+    await syncLoginItemSetting();
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
@@ -141,3 +246,5 @@ app
     });
   })
   .catch(console.log);
+
+
