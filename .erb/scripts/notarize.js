@@ -1,14 +1,13 @@
-const { notarize } = require('@electron/notarize');
-const { build } = require('../../package.json');
+const { execFile } = require('node:child_process');
+const fs = require('node:fs/promises');
+const path = require('node:path');
+const { promisify } = require('node:util');
+
+const execFileAsync = promisify(execFile);
 
 exports.default = async function notarizeMacos(context) {
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== 'darwin') {
-    return;
-  }
-
-  if (process.env.CI !== 'true') {
-    console.warn('Skipping notarizing step. Packaging is not running in CI');
     return;
   }
 
@@ -26,13 +25,58 @@ exports.default = async function notarizeMacos(context) {
   }
 
   const appName = context.packager.appInfo.productFilename;
+  const appPath = `${appOutDir}/${appName}.app`;
+  const zipPath = path.join(appOutDir, `${appName}.zip`);
 
-  await notarize({
-    tool: 'notarytool',
-    appBundleId: build.appId,
-    appPath: `${appOutDir}/${appName}.app`,
-    appleId: process.env.APPLE_ID,
-    appleIdPassword: process.env.APPLE_ID_PASS,
-    teamId: process.env.APPLE_TEAM_ID,
-  });
+  // notarytool requires an archive payload, so zip the app bundle first.
+  await execFileAsync(
+    'ditto',
+    ['-c', '-k', '--sequesterRsrc', '--keepParent', `${appName}.app`, zipPath],
+    {
+      cwd: appOutDir,
+      maxBuffer: 10 * 1024 * 1024,
+    },
+  );
+
+  const notarizeArgs = [
+    'notarytool',
+    'submit',
+    zipPath,
+    '--apple-id',
+    process.env.APPLE_ID,
+    '--password',
+    process.env.APPLE_ID_PASS,
+    '--team-id',
+    process.env.APPLE_TEAM_ID,
+    '--wait',
+    '--output-format',
+    'json',
+  ];
+
+  try {
+    const { stdout, stderr } = await execFileAsync('xcrun', notarizeArgs, {
+      maxBuffer: 10 * 1024 * 1024,
+    });
+
+    let notarizeResult;
+    try {
+      notarizeResult = JSON.parse(stdout);
+    } catch {
+      throw new Error(
+        `Notarization returned non-JSON output.\n\nstdout:\n${stdout}\n\nstderr:\n${stderr}`,
+      );
+    }
+
+    if (notarizeResult.status !== 'Accepted') {
+      throw new Error(
+        `Notarization failed with status "${notarizeResult.status}".\n\nstdout:\n${stdout}\n\nstderr:\n${stderr}`,
+      );
+    }
+
+    await execFileAsync('xcrun', ['stapler', 'staple', appPath], {
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  } finally {
+    await fs.rm(zipPath, { force: true });
+  }
 };

@@ -1,0 +1,25 @@
+
+"mac": {
+  "target": "mas-dev",
+  "minimumSystemVersion": "12.0.0",
+  "type": "development",
+  "hardenedRuntime": true,
+  "category": "public.app-category.utilities",
+  "icon": "assets/icon.icns",
+  "provisioningProfile": "assets/MAS/AppleDevelopment.provisionprofile",
+  "entitlements": "assets/MAS/entitlements.mas.plist",
+  "entitlementsInherit": "assets/MAS/entitlements.mas.inherit.plist"
+}
+
+
+"mac": {
+  "target": "mas",
+  "minimumSystemVersion": "12.0.0",
+  "type": "distribution",
+  "hardenedRuntime": true,
+  "category": "public.app-category.utilities",
+  "icon": "assets/icon.icns",
+  "provisioningProfile": "assets/MAS/MacAppStore.provisionprofile",
+  "entitlements": "assets/MAS/entitlements.mas.plist",
+  "entitlementsInherit": "assets/MAS/entitlements.mas.inherit.plist"
+}
